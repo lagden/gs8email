@@ -1,15 +1,9 @@
 <?php
-header("Access-Control-Allow-Origin: http://localhost:1111, http://*.gruposuper8.com");
-header('Access-Control-Max-Age: 1728000');
-header('Access-Control-Allow-Methods: POST');
-header('Access-Control-Allow-Headers: Content-MD5, X-Alt-Referer, X-Requested-With');
-header('Access-Control-Allow-Credentials: true');
-header("Content-Type: application/json; charset=utf-8");
-
 require_once dirname(__FILE__).'/vendor/autoload.php';
 
-function param($param, $v = false) {
-  return isset($_POST[$param]) ? ($_POST[$param] ? $_POST[$param] : $v) : $v;
+function param($param, $v = false, $from = true) {
+  $var = ($from) ? $_POST : $_SERVER;
+  return isset($var[$param]) && $var[$param] ? $var[$param] : $v;
 }
 
 function isAjax() {
@@ -48,6 +42,20 @@ function buildMessage() {
   return [$plain, $html];
 }
 
+// Multiple domain
+$domain = 'http://gruposuper8.com';
+$origin = param('HTTP_ORIGIN', $domain, false);
+$pattern = '/^http(s)?:\/\/(.+\.)?(localhost\:1111|gruposuper8\.com)$/i';
+$res = preg_match($pattern, $origin);
+$origin = ($res) ? $origin : $domain;
+
+header("Access-Control-Allow-Origin: {$origin}");
+// header('Access-Control-Max-Age: 1728000');
+header('Access-Control-Allow-Methods: POST');
+header('Access-Control-Allow-Headers: Content-MD5, X-Alt-Referer, X-Requested-With');
+header('Access-Control-Allow-Credentials: true');
+header("Content-Type: application/json; charset=utf-8");
+
 $response = [
   'success' => false,
   'message' => 'Falha ao enviar',
@@ -68,7 +76,7 @@ if (isAjax() && $idade === '6f4922f45568161a8cdf4ad2299f6d23') {
   $mailer = \Swift_Mailer::newInstance($transport);
   $message = \Swift_Message::newInstance()
     ->setSubject('[Contato] Site Grupo Super 8')
-    ->setFrom($from)
+    ->setFrom(['no-reply@gruposuper8.com'])
     ->setReplyTo($from)
     ->setTo(['lagden@gmail.com', 'leo@gruposuper8.com'])
     ->setBody($msg[1], 'text/html')
@@ -77,9 +85,10 @@ if (isAjax() && $idade === '6f4922f45568161a8cdf4ad2299f6d23') {
   $result = $mailer->send($message);
   if ($result) {
     $response['success'] = true;
-    $response['message'] = 'Enviado com sucesso';
+    $response['message'] = 'Enviado com sucesso.';
   } else {
-    $response['message'] = 'Problemas no transport';
+    $response['message'] = 'Problemas no servidor. Tente mais tarde.';
+    $response['debug'] = $result;
   }
 }
 
