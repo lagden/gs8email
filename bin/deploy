@@ -10,21 +10,21 @@ CURR_FOLDER=`pwd`
 cd $CURR_FOLDER
 EXCLUDE=$CURR_FOLDER/exclude.rsync
 LOG=$CURR_FOLDER/rsync.log
-DEST=email.gruposuper8.com:/home/lagden/webapps/gs8email
+DEST=75.126.173.136:/home/lagden/webapps/gs8email
 
 # Sync
 rsync $CURR_FOLDER/. $DEST --rsh ssh --recursive --delete --exclude-from $EXCLUDE --verbose > $LOG
 
-ssh -T email.gruposuper8.com <<EOF
+# ssh -T 75.126.173.136 <<EOF
 
-cd /home/lagden/webapps/gs8email
+# cd /home/lagden/webapps/gs8email
 
-# Composer
-composer.phar self-update
-composer.phar update
+# # Composer
+# # composer.phar self-update
+# # composer.phar update
 
-exit 0
-EOF
+# exit 0
+# EOF
 
 echo "                                "
 echo "< Deploy finalizado... Yeahh!! >"

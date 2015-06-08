@@ -1,12 +1,19 @@
 <?php
+header("Access-Control-Allow-Origin: http://localhost:1111, http://*.gruposuper8.com");
+header('Access-Control-Max-Age: 1728000');
+header('Access-Control-Allow-Methods: POST');
+header('Access-Control-Allow-Headers: Content-MD5, X-Alt-Referer, X-Requested-With');
+header('Access-Control-Allow-Credentials: true');
+header("Content-Type: application/json; charset=utf-8");
+
 require_once dirname(__FILE__).'/vendor/autoload.php';
 
 function param($param, $v = false) {
-  return isset($_POST[$param]) ? $_POST[$param] : $v;
+  return isset($_POST[$param]) ? ($_POST[$param] ? $_POST[$param] : $v) : $v;
 }
 
 function isAjax() {
-  return isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest';
+  return isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequestGS8';
 }
 
 function buildMessage() {
@@ -43,12 +50,16 @@ function buildMessage() {
 
 $response = [
   'success' => false,
-  'message' => 'Falha ao enviar'
+  'message' => 'Falha ao enviar',
+  'debug' => null
 ];
 
-$idade = param('idade');
+$idade = param('idade', '6f4922f45568161a8cdf4ad2299f6d23');
 
-if (isAjax() && $idade === false) {
+// Debug
+// $response['debug'] = [$_POST, $idade, isAjax(), $_SERVER];
+
+if (isAjax() && $idade === '6f4922f45568161a8cdf4ad2299f6d23') {
   $nome = param('nome');
   $email = param('email');
   $from = [$email => $nome];
@@ -59,7 +70,7 @@ if (isAjax() && $idade === false) {
     ->setSubject('[Contato] Site Grupo Super 8')
     ->setFrom($from)
     ->setReplyTo($from)
-    ->setTo(['lagden@gmail.com'])
+    ->setTo(['lagden@gmail.com', 'leo@gruposuper8.com'])
     ->setBody($msg[1], 'text/html')
     ->addPart($msg[0], 'text/plain');
 
@@ -67,6 +78,8 @@ if (isAjax() && $idade === false) {
   if ($result) {
     $response['success'] = true;
     $response['message'] = 'Enviado com sucesso';
+  } else {
+    $response['message'] = 'Problemas no transport';
   }
 }
 
