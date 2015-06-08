@@ -1,0 +1,23 @@
+# Project files
+.svn*
+.git*
+.jsh*
+.bower*
+.edito*
+*.md
+*.sublime-*
+*.log
+/composer.lock
+/exclude.rsync
+/bin
+/vendor
+
+# SCM files
+.DS_Store
+thumbs.db
+.arch-params
+.bzr
+_darcs
+.hg
+.monotone
+CVS

@@ -1,0 +1,39 @@
+#!/usr/bin/env sh
+
+THIS=$(basename $0)
+DIR="$( cd -P "$( dirname "$0" )" && pwd )"
+cd $DIR
+cd ..
+CURR_FOLDER=`pwd`
+
+# Root
+cd $CURR_FOLDER
+EXCLUDE=$CURR_FOLDER/exclude.rsync
+LOG=$CURR_FOLDER/rsync.log
+DEST=email.gruposuper8.com:/home/lagden/webapps/gs8email
+
+# Sync
+rsync $CURR_FOLDER/. $DEST --rsh ssh --recursive --delete --exclude-from $EXCLUDE --verbose > $LOG
+
+ssh -T email.gruposuper8.com <<EOF
+
+cd /home/lagden/webapps/gs8email
+
+# Composer
+composer.phar self-update
+composer.phar update
+
+exit 0
+EOF
+
+echo "                                "
+echo "< Deploy finalizado... Yeahh!! >"
+echo "------------------------------  "
+echo "        \   ^__^                "
+echo "         \  (oo)\_______        "
+echo "            (__)\       )\/\    "
+echo "                ||----w |       "
+echo "                ||     ||       "
+echo "                                "
+
+exit 0
