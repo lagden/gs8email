@@ -50,7 +50,6 @@ $res = preg_match($pattern, $origin);
 $origin = ($res) ? $origin : $domain;
 
 header("Access-Control-Allow-Origin: {$origin}");
-// header('Access-Control-Max-Age: 1728000');
 header('Access-Control-Allow-Methods: POST');
 header('Access-Control-Allow-Headers: Content-MD5, X-Alt-Referer, X-Requested-With');
 header('Access-Control-Allow-Credentials: true');
